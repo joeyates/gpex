@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/0" version="1.0" creator="GPSLogger - http://gpslogger.mendhak.com/" xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd">
+  <time>2015-09-19T08:07:38Z</time>
+  <trk>
+    <trkseg>
+      <trkpt lat="43.74124841" lon="11.47096552">
+        <ele>334.29998779296875</ele>
+        <time>2015-09-19T08:07:38Z</time>
+        <speed>0.0</speed>
+        <src>gps</src>
+        <sat>6</sat>
+        <hdop>14.0</hdop>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>
