@@ -19,6 +19,7 @@ defmodule Gpex.Mixfile do
   defp deps do
     [
       {:expand, ">= 0.0.3"},
+      {:sweet_xml, ">= 0.4.0"},
     ]
   end
 end
