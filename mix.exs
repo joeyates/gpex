@@ -4,11 +4,13 @@ defmodule Gpex.Mixfile do
   def project do
     [
       app: :gpex,
-      version: "0.0.1",
+      version: "0.1.1",
       elixir: "~> 1.0",
-      build_embedded: Mix.env == :prod,
-      start_permanent: Mix.env == :prod,
-      deps: deps
+      description: "Parse GPX files",
+      package: package(),
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      deps: deps()
     ]
   end
 
@@ -18,7 +20,18 @@ defmodule Gpex.Mixfile do
 
   defp deps do
     [
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:saxy, "~> 1.5"}
     ]
+  end
+
+  defp package do
+    %{
+      licenses: ["MIT"],
+      links: %{
+        "GitHub" => "https://github.com/joeyates/gpex"
+      },
+      maintainers: ["Joe Yates"]
+    }
   end
 end
