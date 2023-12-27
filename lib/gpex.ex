@@ -8,6 +8,10 @@ defmodule Gpex do
     new(attrs, children)
   end
 
+  def to_s(gpx) do
+    Gpex.XML.Encoder.encode(gpx)
+  end
+
   defp new(_attrs, children) when is_list(children) do
     tracks =
       children
