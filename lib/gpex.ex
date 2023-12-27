@@ -1,31 +1,24 @@
-defmodule Gpex.Point do
-  import SweetXml
-
-  defstruct longitude: nil, latitude: nil, elevation: nil, time: nil
-end
-
 defmodule Gpex do
-  import SweetXml
+  defstruct ~w(tracks)a
 
-  def parse(xml) do
-    xml |> trkpts() |> points()
+  alias Gpex.Track
+
+  def parse(text) when is_binary(text) do
+    {:ok, {"gpx", attrs, children}} = Saxy.SimpleForm.parse_string(text)
+    new(attrs, children)
   end
 
-  defp trkpts(gpx) do
-    gpx |> xpath(
-      ~x"/gpx/trk/trkseg/trkpt"l,
-      elevation: ~x"/trkpt/ele/text()",
-      time: ~x"/trkpt/time/text()",
-      longitude: ~x"/trkpt/@lon",
-      latitude: ~x"/trkpt/@lat",
-    )
-  end
+  defp new(_attrs, children) when is_list(children) do
+    tracks =
+      children
+      |> Enum.map(fn
+        {"trk", attrs, children} ->
+          Track.new(attrs, children)
+        _ ->
+          nil
+      end)
+      |> Enum.filter(& &1)
 
-  defp points([trkpt | rest]) do
-    [struct(Gpex.Point, trkpt) | points(rest)]
-  end
-
-  defp points([]) do
-    []
+    %__MODULE__{tracks: tracks}
   end
 end
