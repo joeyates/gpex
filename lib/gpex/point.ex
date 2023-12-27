@@ -41,4 +41,15 @@ defmodule Gpex.Point do
   end
 
   defp attribute(_any), do: nil
+
+  defimpl Gpex.XML.Encoder do
+    def encode(point, _opts \\ []) do
+      """
+      <trkpt lat="#{point.latitude}" lon="#{point.longitude}">
+        #{if point.elevation, do: "<ele>#{point.elevation}</ele>"}
+        #{if point.time, do: "<time>#{DateTime.to_iso8601(point.time)}</time>"}
+      </trkpt>
+      """
+    end
+  end
 end

@@ -16,4 +16,14 @@ defmodule Gpex.TrackSegment do
 
     %__MODULE__{points: points}
   end
+
+  defimpl Gpex.XML.Encoder do
+    def encode(segment, _opts \\ []) do
+      """
+      <trkseg>
+        #{ Gpex.XML.Encoder.encode(segment.points) }
+      </trkseg>
+      """
+    end
+  end
 end

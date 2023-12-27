@@ -16,4 +16,16 @@ defmodule Gpex.Track do
 
     %__MODULE__{segments: segments}
   end
+
+  defimpl Gpex.XML.Encoder do
+    def encode(track, _opts \\ []) do
+      """
+      <trk>
+        <desc><![CDATA[]]></desc>
+        <type><![CDATA[cycling]]></type>
+        #{ Gpex.XML.Encoder.encode(track.segments) }
+      </trk>
+      """
+    end
+  end
 end
