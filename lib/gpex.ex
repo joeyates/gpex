@@ -8,10 +8,6 @@ defmodule Gpex do
     new(attrs, children)
   end
 
-  def to_s(gpx) do
-    Gpex.XML.Encoder.encode(gpx)
-  end
-
   defp new(_attrs, children) when is_list(children) do
     tracks =
       children
@@ -26,8 +22,8 @@ defmodule Gpex do
     %__MODULE__{tracks: tracks}
   end
 
-  defimpl Gpex.XML.Encoder do
-    def encode(gpx, _opts \\ []) do
+  defimpl String.Chars do
+    def to_string(gpx) do
       """
       <?xml version="1.0" encoding="UTF-8"?>
       <gpx
@@ -38,7 +34,7 @@ defmodule Gpex do
         creator="OpenTracks"
         xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.topografix.com/GPX/Private/TopoGrafix/0/1 http://www.topografix.com/GPX/Private/TopoGrafix/0/1/topografix.xsd"
       >
-        #{ Gpex.XML.Encoder.encode(gpx.tracks) }
+        #{ gpx.tracks |> Enum.map(&Kernel.to_string/1) |> Enum.join("") }
       </gpx>
       """
     end

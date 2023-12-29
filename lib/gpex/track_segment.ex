@@ -17,11 +17,11 @@ defmodule Gpex.TrackSegment do
     %__MODULE__{points: points}
   end
 
-  defimpl Gpex.XML.Encoder do
-    def encode(segment, _opts \\ []) do
+  defimpl String.Chars do
+    def to_string(segment, _opts \\ []) do
       """
       <trkseg>
-        #{ Gpex.XML.Encoder.encode(segment.points) }
+        #{ segment.points |> Enum.map(&Kernel.to_string/1) |> Enum.join("") }
       </trkseg>
       """
     end

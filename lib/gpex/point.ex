@@ -42,8 +42,8 @@ defmodule Gpex.Point do
 
   defp attribute(_any), do: nil
 
-  defimpl Gpex.XML.Encoder do
-    def encode(point, _opts \\ []) do
+  defimpl String.Chars do
+    def to_string(point) do
       """
       <trkpt lat="#{point.latitude}" lon="#{point.longitude}">
         #{if point.elevation, do: "<ele>#{point.elevation}</ele>"}

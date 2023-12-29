@@ -17,13 +17,13 @@ defmodule Gpex.Track do
     %__MODULE__{segments: segments}
   end
 
-  defimpl Gpex.XML.Encoder do
-    def encode(track, _opts \\ []) do
+  defimpl String.Chars do
+    def to_string(track) do
       """
       <trk>
         <desc><![CDATA[]]></desc>
         <type><![CDATA[cycling]]></type>
-        #{ Gpex.XML.Encoder.encode(track.segments) }
+        #{ track.segments |> Enum.map(&Kernel.to_string/1) |> Enum.join("") }
       </trk>
       """
     end
