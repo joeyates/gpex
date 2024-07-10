@@ -14,6 +14,7 @@ defmodule Gpex do
       |> Enum.map(fn
         {"trk", attrs, children} ->
           Track.new(attrs, children)
+
         _ ->
           nil
       end)
@@ -24,19 +25,31 @@ defmodule Gpex do
 
   defimpl String.Chars do
     def to_string(gpx) do
-      """
-      <?xml version="1.0" encoding="UTF-8"?>
-      <gpx
-        xmlns="http://www.topografix.com/GPX/1/1"
-        xmlns:topografix="http://www.topografix.com/GPX/Private/TopoGrafix/0/1"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        version="1.1"
-        creator="OpenTracks"
-        xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.topografix.com/GPX/Private/TopoGrafix/0/1 http://www.topografix.com/GPX/Private/TopoGrafix/0/1/topografix.xsd"
-      >
-        #{ gpx.tracks |> Enum.map(&Kernel.to_string/1) |> Enum.join("") }
-      </gpx>
-      """
+      gpx
+      |> Saxy.Builder.build()
+      |> Saxy.encode!(version: "1.0", encoding: "UTF-8")
+    end
+  end
+
+  defimpl Saxy.Builder do
+    import Saxy.XML
+
+    def build(gpex) do
+      attributes = [
+        {"xmlns", "http://www.topografix.com/GPX/1/1"},
+        {"xmlns:topografix", "http://www.topografix.com/GPX/Private/TopoGrafix/0/1"},
+        {"xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance"},
+        {"version", "1.1"},
+        {"creator", "OpenTracks"},
+        {"xsi:schemaLocation",
+         "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.topografix.com/GPX/Private/TopoGrafix/0/1 http://www.topografix.com/GPX/Private/TopoGrafix/0/1/topografix.xsd"}
+      ]
+
+      tracks =
+        gpex.tracks
+        |> Enum.map(&Saxy.Builder.build/1)
+
+      element("gpx", attributes, tracks)
     end
   end
 end

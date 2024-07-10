@@ -9,6 +9,7 @@ defmodule Gpex.TrackSegment do
       |> Enum.map(fn
         {"trkpt", attrs, children} ->
           Point.new(attrs, children)
+
         _ ->
           nil
       end)
@@ -17,13 +18,15 @@ defmodule Gpex.TrackSegment do
     %__MODULE__{points: points}
   end
 
-  defimpl String.Chars do
-    def to_string(segment, _opts \\ []) do
-      """
-      <trkseg>
-        #{ segment.points |> Enum.map(&Kernel.to_string/1) |> Enum.join("") }
-      </trkseg>
-      """
+  defimpl Saxy.Builder do
+    import Saxy.XML
+
+    def build(segment) do
+      points =
+        segment.points
+        |> Enum.map(&Saxy.Builder.build/1)
+
+      element("trkseg", [], points)
     end
   end
 end
