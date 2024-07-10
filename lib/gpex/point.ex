@@ -3,9 +3,11 @@ defmodule Gpex.Point do
 
   def new(attrs, children) do
     attrs = Enum.into(attrs, %{})
+
     longitude =
       Map.get(attrs, "lon")
       |> String.to_float()
+
     latitude =
       Map.get(attrs, "lat")
       |> String.to_float()
@@ -16,25 +18,23 @@ defmodule Gpex.Point do
       |> Enum.filter(& &1)
       |> Enum.into(%{})
 
-    elevation = nested["elevation"]
-    time = nested["time"]
-
     %__MODULE__{
       longitude: longitude,
       latitude: latitude,
-      elevation: elevation,
-      time: time
+      elevation: nested[:elevation],
+      time: nested[:time]
     }
   end
 
   defp attribute({"ele", _attrs, [elevation]}) do
-    {"elevation", String.to_float(elevation)}
+    {:elevation, String.to_float(elevation)}
   end
 
   defp attribute({"time", [], [time]}) when is_binary(time) do
     case DateTime.from_iso8601(time) do
       {:ok, date_time, _rest} ->
-        {"time", date_time}
+        {:time, date_time}
+
       _ ->
         nil
     end
@@ -42,14 +42,30 @@ defmodule Gpex.Point do
 
   defp attribute(_any), do: nil
 
-  defimpl String.Chars do
-    def to_string(point) do
-      """
-      <trkpt lat="#{point.latitude}" lon="#{point.longitude}">
-        #{if point.elevation, do: "<ele>#{point.elevation}</ele>"}
-        #{if point.time, do: "<time>#{DateTime.to_iso8601(point.time)}</time>"}
-      </trkpt>
-      """
+  defimpl Saxy.Builder do
+    import Saxy.XML
+
+    def build(point) do
+      attributes = [
+        {"lat", point.latitude},
+        {"lon", point.longitude}
+      ]
+
+      attributes =
+        if point.elevation do
+          [{"ele", point.elevation} | attributes]
+        else
+          attributes
+        end
+
+      attributes =
+        if point.time do
+          [{"time", DateTime.to_iso8601(point.time)} | attributes]
+        else
+          attributes
+        end
+
+      element("trackpt", attributes, [])
     end
   end
 end
