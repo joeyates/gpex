@@ -30,6 +30,6 @@ defmodule GpexTest do
     {:ok, gpx_data} = File.read("test/fixtures/minimal.gpx")
 
     assert to_string(Gpex.parse(gpx_data)) ==
-             "<?xml version=\"1.0\" encoding=\"UTF-8\"?><gpx xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:topografix=\"http://www.topografix.com/GPX/Private/TopoGrafix/0/1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.1\" creator=\"OpenTracks\" xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.topografix.com/GPX/Private/TopoGrafix/0/1 http://www.topografix.com/GPX/Private/TopoGrafix/0/1/topografix.xsd\"><trk><trkseg><trackpt time=\"2015-09-19T08:07:38Z\" ele=\"334.29998779296875\" lat=\"43.74124841\" lon=\"11.47096552\"/></trkseg></trk></gpx>"
+             "<?xml version=\"1.0\" encoding=\"UTF-8\"?><gpx xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:topografix=\"http://www.topografix.com/GPX/Private/TopoGrafix/0/1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.1\" creator=\"OpenTracks\" xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.topografix.com/GPX/Private/TopoGrafix/0/1 http://www.topografix.com/GPX/Private/TopoGrafix/0/1/topografix.xsd\"><trk><trkseg><trkpt lat=\"43.74124841\" lon=\"11.47096552\"><time>2015-09-19T08:07:38Z</time><ele>334.29998779296875</ele></trkpt></trkseg></trk></gpx>"
   end
 end
