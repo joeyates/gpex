@@ -15,7 +15,7 @@ defmodule Gpex.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :saxy]]
+    [extra_applications: [:logger, :saxy]]
   end
 
   defp deps do
