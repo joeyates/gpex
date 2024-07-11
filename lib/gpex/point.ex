@@ -65,7 +65,7 @@ defmodule Gpex.Point do
           attributes
         end
 
-      element("trackpt", attributes, [])
+      element("trkpt", attributes, [])
     end
   end
 end
