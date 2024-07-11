@@ -51,21 +51,21 @@ defmodule Gpex.Point do
         {"lon", point.longitude}
       ]
 
-      attributes =
+      children =
         if point.elevation do
-          [{"ele", point.elevation} | attributes]
+          [{"ele", [], [to_string(point.elevation)]}]
         else
-          attributes
+          []
         end
 
-      attributes =
+      children =
         if point.time do
-          [{"time", DateTime.to_iso8601(point.time)} | attributes]
+          [{"time", [], [DateTime.to_iso8601(point.time)]} | children]
         else
-          attributes
+          children
         end
 
-      element("trkpt", attributes, [])
+      element("trkpt", attributes, children)
     end
   end
 end
