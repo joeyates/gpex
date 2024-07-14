@@ -8,6 +8,11 @@ defmodule Gpex do
     new(attrs, children)
   end
 
+  def reverse(%__MODULE__{tracks: tracks}) do
+    tracks = tracks |> Enum.map(&Track.reverse/1) |> Enum.reverse()
+    %__MODULE__{tracks: tracks}
+  end
+
   defp new(_attrs, children) when is_list(children) do
     tracks =
       children

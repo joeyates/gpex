@@ -24,6 +24,11 @@ defmodule Gpex.Track do
     %__MODULE__{description: nested[:description], type: nested[:type], segments: segments}
   end
 
+  def reverse(%__MODULE__{segments: segments} = track) do
+    segments = segments |> Enum.map(&TrackSegment.reverse/1) |> Enum.reverse()
+    %__MODULE__{track | segments: segments}
+  end
+
   defp attribute({"desc", _attrs, [description]}) do
     {:description, description}
   end
