@@ -18,6 +18,11 @@ defmodule Gpex.TrackSegment do
     %__MODULE__{points: points}
   end
 
+  def reverse(%__MODULE__{points: points}) do
+    points = points |> Enum.reverse()
+    %__MODULE__{points: points}
+  end
+
   defimpl Saxy.Builder do
     import Saxy.XML
 
