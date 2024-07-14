@@ -4,7 +4,7 @@ defmodule Gpex.Mixfile do
   def project do
     [
       app: :gpex,
-      version: "0.5.0",
+      version: "0.6.0",
       elixir: "~> 1.0",
       description: "Parse and serialize GPX files",
       package: package(),
