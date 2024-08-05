@@ -25,6 +25,21 @@ defmodule GpexTest do
                time: ~U[2015-09-19 08:07:38Z]
              }
     end
+
+    test "parses waypoints" do
+      {:ok, gpx_data} = File.read("test/fixtures/minimal.gpx")
+
+      parsed = Gpex.parse(gpx_data)
+
+      waypoint = get_in(parsed, [Access.key(:waypoints), Access.at(0)])
+
+      assert waypoint == %Gpex.Waypoint{
+               name: "A point of interest",
+               longitude: 11.707813,
+               latitude: 43.553252,
+               elevation: 307.6000061035156
+             }
+    end
   end
 
   describe "reverse/1" do
@@ -60,7 +75,7 @@ defmodule GpexTest do
       {:ok, gpx_data} = File.read("test/fixtures/minimal.gpx")
 
       assert to_string(Gpex.parse(gpx_data)) ==
-               "<?xml version=\"1.0\" encoding=\"UTF-8\"?><gpx xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:topografix=\"http://www.topografix.com/GPX/Private/TopoGrafix/0/1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.1\" creator=\"OpenTracks\" xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.topografix.com/GPX/Private/TopoGrafix/0/1 http://www.topografix.com/GPX/Private/TopoGrafix/0/1/topografix.xsd\"><trk><trkseg><trkpt lat=\"43.74124841\" lon=\"11.47096552\"><time>2015-09-19T08:07:38Z</time><ele>334.29998779296875</ele></trkpt></trkseg></trk></gpx>"
+               "<?xml version=\"1.0\" encoding=\"UTF-8\"?><gpx xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:topografix=\"http://www.topografix.com/GPX/Private/TopoGrafix/0/1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.1\" creator=\"OpenTracks\" xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.topografix.com/GPX/Private/TopoGrafix/0/1 http://www.topografix.com/GPX/Private/TopoGrafix/0/1/topografix.xsd\"><wpt lat=\"43.553252\" lon=\"11.707813\"><name><![CDATA[A point of interest]]></name><ele>307.6000061035156</ele></wpt><trk><trkseg><trkpt lat=\"43.74124841\" lon=\"11.47096552\"><time>2015-09-19T08:07:38Z</time><ele>334.29998779296875</ele></trkpt></trkseg></trk></gpx>"
     end
   end
 end

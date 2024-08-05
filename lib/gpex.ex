@@ -1,31 +1,54 @@
 defmodule Gpex do
-  defstruct ~w(tracks)a
+  defstruct [
+    tracks: [],
+    waypoints: []
+  ]
 
-  alias Gpex.Track
+  alias Gpex.{Track, Waypoint}
 
   def parse(text) when is_binary(text) do
     {:ok, {"gpx", attrs, children}} = Saxy.SimpleForm.parse_string(text)
     new(attrs, children)
   end
 
-  def reverse(%__MODULE__{tracks: tracks}) do
+  def reverse(%__MODULE__{tracks: tracks, waypoints: waypoints}) do
     tracks = tracks |> Enum.map(&Track.reverse/1) |> Enum.reverse()
-    %__MODULE__{tracks: tracks}
+    %__MODULE__{tracks: tracks, waypoints: waypoints}
   end
 
   defp new(_attrs, children) when is_list(children) do
-    tracks =
+    parts =
       children
-      |> Enum.map(fn
-        {"trk", attrs, children} ->
-          Track.new(attrs, children)
+      |> Enum.reduce(
+        %{tracks: [], waypoints: []},
+        fn
+          {"trk", attrs, children}, acc ->
+            update_in(
+              acc,
+              [:tracks],
+              fn t ->
+                [Track.new(attrs, children) | t]
+              end
+            )
 
-        _ ->
-          nil
+          {"wpt", attrs, children}, acc ->
+            update_in(
+              acc,
+              [:waypoints],
+              fn w ->
+                [Waypoint.new(attrs, children) | w]
+              end
+            )
+
+          _other, acc ->
+            acc
+        end
+      )
+      |> then(fn %{tracks: tracks, waypoints: waypoints} ->
+        %{tracks: Enum.reverse(tracks), waypoints: Enum.reverse(waypoints)}
       end)
-      |> Enum.filter(& &1)
 
-    %__MODULE__{tracks: tracks}
+    struct!(__MODULE__, parts)
   end
 
   defimpl String.Chars do
@@ -50,11 +73,15 @@ defmodule Gpex do
          "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.topografix.com/GPX/Private/TopoGrafix/0/1 http://www.topografix.com/GPX/Private/TopoGrafix/0/1/topografix.xsd"}
       ]
 
+      waypoints =
+        gpex.waypoints
+        |> Enum.map(&Saxy.Builder.build/1)
+
       tracks =
         gpex.tracks
         |> Enum.map(&Saxy.Builder.build/1)
 
-      element("gpx", attributes, tracks)
+      element("gpx", attributes, waypoints ++ tracks)
     end
   end
 end
