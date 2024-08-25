@@ -6,11 +6,11 @@ defmodule Gpex.Point do
 
     longitude =
       Map.get(attrs, "lon")
-      |> String.to_float()
+      |> float()
 
     latitude =
       Map.get(attrs, "lat")
-      |> String.to_float()
+      |> float()
 
     nested =
       children
@@ -27,7 +27,7 @@ defmodule Gpex.Point do
   end
 
   defp attribute({"ele", _attrs, [elevation]}) do
-    {:elevation, String.to_float(elevation)}
+    {:elevation, float(elevation)}
   end
 
   defp attribute({"time", [], [time]}) when is_binary(time) do
@@ -41,6 +41,11 @@ defmodule Gpex.Point do
   end
 
   defp attribute(_any), do: nil
+
+  defp float(text) do
+    {value, _} = Float.parse(text)
+    value
+  end
 
   defimpl Saxy.Builder do
     import Saxy.XML
