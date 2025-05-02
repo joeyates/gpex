@@ -64,4 +64,3 @@ defmodule Gpex.Waypoint do
     end
   end
 end
-

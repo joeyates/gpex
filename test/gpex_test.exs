@@ -2,6 +2,8 @@ defmodule GpexTest do
   use ExUnit.Case
   alias Gpex
 
+  doctest Gpex
+
   describe "parse/1" do
     test "parses tracks" do
       {:ok, gpx_data} = File.read("test/fixtures/minimal.gpx")
@@ -75,7 +77,16 @@ defmodule GpexTest do
       {:ok, gpx_data} = File.read("test/fixtures/minimal.gpx")
 
       assert to_string(Gpex.parse(gpx_data)) ==
-               "<?xml version=\"1.0\" encoding=\"UTF-8\"?><gpx xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:topografix=\"http://www.topografix.com/GPX/Private/TopoGrafix/0/1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.1\" creator=\"OpenTracks\" xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.topografix.com/GPX/Private/TopoGrafix/0/1 http://www.topografix.com/GPX/Private/TopoGrafix/0/1/topografix.xsd\"><wpt lat=\"43.553252\" lon=\"11.707813\"><name><![CDATA[A point of interest]]></name><ele>307.6000061035156</ele></wpt><trk><trkseg><trkpt lat=\"43.74124841\" lon=\"11.47096552\"><time>2015-09-19T08:07:38Z</time><ele>334.29998779296875</ele></trkpt></trkseg></trk></gpx>"
+               ~s(<?xml version="1.0" encoding="UTF-8"?>) <>
+                 ~s(<gpx version="1.0" creator="Some creator" xmlns="http://www.topografix.com/GPX/1/0" xmlns:topografix="http://www.topografix.com/GPX/Private/TopoGrafix/0/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd">) <>
+                 ~s(<wpt lat="43.553252" lon="11.707813">) <>
+                 ~s(<name>) <>
+                 ~s(<![CDATA[A point of interest]]>) <>
+                 ~s(</name>) <>
+                 ~s(<ele>307.6000061035156</ele>) <>
+                 ~s(</wpt>) <>
+                 ~s(<trk>) <>
+                 ~s(<trkseg><trkpt lat="43.74124841" lon="11.47096552"><time>2015-09-19T08:07:38Z</time><ele>334.29998779296875</ele></trkpt></trkseg></trk></gpx>)
     end
   end
 end
