@@ -1,15 +1,21 @@
 defmodule Gpex do
-  defstruct creator: "Gpex",
-            version: "1.1",
-            xmlns: "http://www.topografix.com/GPX/1/1",
-            "xmlns:topografix": "http://www.topografix.com/GPX/Private/TopoGrafix/0/1",
-            "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-            "xsi:schemaLocation":
-              "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.topografix.com/GPX/Private/TopoGrafix/0/1 http://www.topografix.com/GPX/Private/TopoGrafix/0/1/topografix.xsd",
+  @default_creator "Gpex"
+  @default_version "1.1"
+  @default_namespaces %{
+    "xmlns" => "http://www.topografix.com/GPX/1/1",
+    "xmlns:topografix" => "http://www.topografix.com/GPX/Private/TopoGrafix/0/1",
+    "xmlns:xsi" => "http://www.w3.org/2001/XMLSchema-instance",
+    "xsi:schemaLocation" =>
+      "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.topografix.com/GPX/Private/TopoGrafix/0/1 http://www.topografix.com/GPX/Private/TopoGrafix/0/1/topografix.xsd"
+  }
+
+  defstruct creator: @default_creator,
+            version: @default_version,
+            namespaces: @default_namespaces,
             tracks: [],
             waypoints: []
 
-  alias Gpex.{Track, Waypoint}
+  alias __MODULE__.{Track, Waypoint}
 
   def parse(text) when is_binary(text) do
     {:ok, {"gpx", attrs, children}} = Saxy.SimpleForm.parse_string(text)
@@ -33,18 +39,20 @@ defmodule Gpex do
   %Gpex{
     creator: "Gpex",
     version: "1.1",
-    xmlns: "http://www.topografix.com/GPX/1/1",
-    "xmlns:topografix": "http://www.topografix.com/GPX/Private/TopoGrafix/0/1",
-    "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-    "xsi:schemaLocation":
-      "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.topografix.com/GPX/Private/TopoGrafix/0/1 http://www.topografix.com/GPX/Private/TopoGrafix/0/1/topografix.xsd",
+    namespaces: %{
+      "xmlns" => "http://www.topografix.com/GPX/1/1",
+      "xmlns:topografix" => "http://www.topografix.com/GPX/Private/TopoGrafix/0/1",
+      "xmlns:xsi" => "http://www.w3.org/2001/XMLSchema-instance",
+      "xsi:schemaLocation" =>
+        "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.topografix.com/GPX/Private/TopoGrafix/0/1 http://www.topografix.com/GPX/Private/TopoGrafix/0/1/topografix.xsd"
+    },
     tracks: [],
     waypoints: []
   }
 
   All top-level attributes can be overridden:
 
-  iex> Gpex.new(%{creator: "Custom Creator"}, [])
+  iex> Gpex.new(%{"creator" => "Custom Creator"}, [])
   %Gpex{creator: "Custom Creator"}
 
   Attribute keys can be strings or atoms:
@@ -103,7 +111,20 @@ defmodule Gpex do
   end
 
   def new(attrs, children) when is_map(attrs) and is_list(children) do
+    {attrs, namespaces} = extract_namespaces(attrs)
+    namespaces = Map.merge(@default_namespaces, namespaces)
+
     attrs = atomify_keys(attrs)
+
+    attrs =
+      Map.merge(
+        attrs,
+        %{
+          creator: Map.get(attrs, :creator, @default_creator),
+          version: Map.get(attrs, :version, @default_version),
+          namespaces: namespaces
+        }
+      )
 
     parts =
       children
@@ -139,6 +160,21 @@ defmodule Gpex do
     struct!(__MODULE__, Map.merge(attrs, parts))
   end
 
+  defp extract_namespaces(attrs) do
+    namespaces =
+      attrs
+      |> Enum.filter(fn {key, _} ->
+        key == "xmlns" ||
+          String.starts_with?(key, "xmlns:") ||
+          String.starts_with?(key, "xsi:")
+      end)
+      |> Enum.into(%{})
+
+    attrs = Map.drop(attrs, Map.keys(namespaces))
+
+    {attrs, namespaces}
+  end
+
   defp atomify_keys(attrs) do
     Enum.reduce(attrs, %{}, fn {key, value}, acc ->
       Map.put(acc, atomify(key), value)
@@ -164,6 +200,9 @@ defmodule Gpex do
         gpex
         |> Map.from_struct()
         |> Map.drop([:tracks, :waypoints])
+
+      {namespaces, attributes} = Map.pop!(attributes, :namespaces)
+      attributes = Map.merge(attributes, namespaces)
 
       waypoints =
         gpex.waypoints
