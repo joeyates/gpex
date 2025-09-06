@@ -165,6 +165,7 @@ defmodule Gpex do
       attrs
       |> Enum.filter(fn {key, _} ->
         key == "xmlns" ||
+          key == "schemaLocation" ||
           String.starts_with?(key, "xmlns:") ||
           String.starts_with?(key, "xsi:")
       end)
