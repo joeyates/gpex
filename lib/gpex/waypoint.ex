@@ -28,7 +28,8 @@ defmodule Gpex.Waypoint do
   end
 
   defp attribute({"ele", _attrs, [elevation]}) do
-    {:elevation, String.to_float(elevation)}
+    {float, ""} = Float.parse(elevation)
+    {:elevation, float}
   end
 
   defp attribute({"name", _attrs, [name]}) do
