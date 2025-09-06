@@ -6,11 +6,13 @@ defmodule Gpex.Waypoint do
     attrs = Enum.into(attrs, %{})
 
     longitude =
-      Map.get(attrs, "lon")
+      attrs
+      |> Map.get("lon")
       |> String.to_float()
 
     latitude =
-      Map.get(attrs, "lat")
+      attrs
+      |> Map.get("lat")
       |> String.to_float()
 
     nested =

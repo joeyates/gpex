@@ -5,11 +5,13 @@ defmodule Gpex.Point do
     attrs = Enum.into(attrs, %{})
 
     longitude =
-      Map.get(attrs, "lon")
+      attrs
+      |> Map.get("lon")
       |> float()
 
     latitude =
-      Map.get(attrs, "lat")
+      attrs
+      |> Map.get("lat")
       |> float()
 
     nested =
