@@ -1,5 +1,6 @@
 defmodule GpexTest do
   use ExUnit.Case
+
   alias Gpex
 
   doctest Gpex
@@ -8,7 +9,7 @@ defmodule GpexTest do
     test "parses tracks" do
       {:ok, gpx_data} = File.read("test/fixtures/minimal.gpx")
 
-      parsed = Gpex.parse(gpx_data)
+      {:ok, parsed} = Gpex.parse(gpx_data)
 
       point =
         get_in(parsed, [
@@ -31,7 +32,7 @@ defmodule GpexTest do
     test "parses waypoints" do
       {:ok, gpx_data} = File.read("test/fixtures/minimal.gpx")
 
-      parsed = Gpex.parse(gpx_data)
+      {:ok, parsed} = Gpex.parse(gpx_data)
 
       waypoint = get_in(parsed, [Access.key(:waypoints), Access.at(0)])
 
@@ -76,7 +77,9 @@ defmodule GpexTest do
     test "it serializes" do
       {:ok, gpx_data} = File.read("test/fixtures/minimal.gpx")
 
-      assert to_string(Gpex.parse(gpx_data)) ==
+      {:ok, gpex} = Gpex.parse(gpx_data)
+
+      assert to_string(gpex) ==
                ~s(<?xml version="1.0" encoding="UTF-8"?>) <>
                  ~s(<gpx version="1.0" creator="Some creator" xmlns="http://www.topografix.com/GPX/1/0" xmlns:topografix="http://www.topografix.com/GPX/Private/TopoGrafix/0/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd">) <>
                  ~s(<wpt lat="43.553252" lon="11.707813">) <>

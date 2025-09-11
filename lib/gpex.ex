@@ -18,8 +18,9 @@ defmodule Gpex do
   alias __MODULE__.{Track, Waypoint}
 
   def parse(text) when is_binary(text) do
-    {:ok, {"gpx", attrs, children}} = Saxy.SimpleForm.parse_string(text)
-    new(attrs, children)
+    with {:ok, {"gpx", attrs, children}} <- Saxy.SimpleForm.parse_string(text) do
+      {:ok, new(attrs, children)}
+    end
   end
 
   def reverse(%__MODULE__{tracks: tracks, waypoints: waypoints}) do
